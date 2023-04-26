@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Rinvex\Subscriptions\Providers;
+namespace Loffel\Subscriptions\Providers;
 
-use Rinvex\Subscriptions\Models\Plan;
+use Loffel\Subscriptions\Models\Plan;
 use Illuminate\Support\ServiceProvider;
-use Rinvex\Support\Traits\ConsoleTools;
-use Rinvex\Subscriptions\Models\PlanFeature;
-use Rinvex\Subscriptions\Models\PlanSubscription;
-use Rinvex\Subscriptions\Models\PlanSubscriptionUsage;
-use Rinvex\Subscriptions\Console\Commands\MigrateCommand;
-use Rinvex\Subscriptions\Console\Commands\PublishCommand;
-use Rinvex\Subscriptions\Console\Commands\RollbackCommand;
+use Loffel\Support\Traits\ConsoleTools;
+use Loffel\Subscriptions\Models\PlanFeature;
+use Loffel\Subscriptions\Models\PlanSubscription;
+use Loffel\Subscriptions\Models\PlanSubscriptionUsage;
+use Loffel\Subscriptions\Console\Commands\MigrateCommand;
+use Loffel\Subscriptions\Console\Commands\PublishCommand;
+use Loffel\Subscriptions\Console\Commands\RollbackCommand;
 
 class SubscriptionsServiceProvider extends ServiceProvider
 {
@@ -24,9 +24,9 @@ class SubscriptionsServiceProvider extends ServiceProvider
      * @var array
      */
     protected $commands = [
-        MigrateCommand::class => 'command.rinvex.subscriptions.migrate',
-        PublishCommand::class => 'command.rinvex.subscriptions.publish',
-        RollbackCommand::class => 'command.rinvex.subscriptions.rollback',
+        'command.loffel.subscriptions.migrate' => MigrateCommand::class,
+        'command.loffel.subscriptions.publish' => PublishCommand::class,
+        'command.loffel.subscriptions.rollback' => RollbackCommand::class,
     ];
 
     /**
@@ -36,18 +36,18 @@ class SubscriptionsServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->mergeConfigFrom(realpath(__DIR__.'/../../config/config.php'), 'rinvex.subscriptions');
+        $this->mergeConfigFrom(realpath(__DIR__.'/../../config/config.php'), 'loffel.subscriptions');
 
         // Bind eloquent models to IoC container
         $this->registerModels([
-            'rinvex.subscriptions.plan' => Plan::class,
-            'rinvex.subscriptions.plan_feature' => PlanFeature::class,
-            'rinvex.subscriptions.plan_subscription' => PlanSubscription::class,
-            'rinvex.subscriptions.plan_subscription_usage' => PlanSubscriptionUsage::class,
+            'loffel.subscriptions.plan' => Plan::class,
+            'loffel.subscriptions.plan_feature' => PlanFeature::class,
+            'loffel.subscriptions.plan_subscription' => PlanSubscription::class,
+            'loffel.subscriptions.plan_subscription_usage' => PlanSubscriptionUsage::class,
         ]);
 
         // Register console commands
-        $this->registerCommands($this->commands);
+        $this->commands($this->commands);
     }
 
     /**
@@ -58,8 +58,8 @@ class SubscriptionsServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Publish Resources
-        $this->publishesConfig('rinvex/laravel-subscriptions');
-        $this->publishesMigrations('rinvex/laravel-subscriptions');
-        ! $this->autoloadMigrations('rinvex/laravel-subscriptions') || $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
+        $this->publishesConfig('loffel/laravel-subscriptions');
+        $this->publishesMigrations('loffel/laravel-subscriptions');
+        ! $this->autoloadMigrations('loffel/laravel-subscriptions') || $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
     }
 }

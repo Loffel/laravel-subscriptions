@@ -7,7 +7,7 @@ namespace Loffel\Subscriptions\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
-use Loffel\Support\Traits\ValidatingTrait;
+use Rinvex\Support\Traits\ValidatingTrait;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

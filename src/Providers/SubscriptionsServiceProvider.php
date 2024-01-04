@@ -6,7 +6,7 @@ namespace Loffel\Subscriptions\Providers;
 
 use Loffel\Subscriptions\Models\Plan;
 use Illuminate\Support\ServiceProvider;
-use Loffel\Support\Traits\ConsoleTools;
+use Rinvex\Support\Traits\ConsoleTools;
 use Loffel\Subscriptions\Models\PlanFeature;
 use Loffel\Subscriptions\Models\PlanSubscription;
 use Loffel\Subscriptions\Models\PlanSubscriptionUsage;

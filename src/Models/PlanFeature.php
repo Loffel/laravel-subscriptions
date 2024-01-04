@@ -6,12 +6,12 @@ namespace Loffel\Subscriptions\Models;
 
 use Carbon\Carbon;
 use Spatie\Sluggable\SlugOptions;
-use Loffel\Support\Traits\HasSlug;
+use Rinvex\Support\Traits\HasSlug;
 use Spatie\EloquentSortable\Sortable;
 use Illuminate\Database\Eloquent\Model;
 use Loffel\Subscriptions\Services\Period;
-use Loffel\Support\Traits\HasTranslations;
-use Loffel\Support\Traits\ValidatingTrait;
+use Rinvex\Support\Traits\HasTranslations;
+use Rinvex\Support\Traits\ValidatingTrait;
 use Spatie\EloquentSortable\SortableTrait;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Loffel\Subscriptions\Traits\BelongsToPlan;

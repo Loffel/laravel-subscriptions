@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Loffel\Subscriptions\Models;
 
 use Spatie\Sluggable\SlugOptions;
-use Loffel\Support\Traits\HasSlug;
+use Rinvex\Support\Traits\HasSlug;
 use Spatie\EloquentSortable\Sortable;
 use Illuminate\Database\Eloquent\Model;
-use Loffel\Support\Traits\HasTranslations;
-use Loffel\Support\Traits\ValidatingTrait;
+use Rinvex\Support\Traits\HasTranslations;
+use Rinvex\Support\Traits\ValidatingTrait;
 use Spatie\EloquentSortable\SortableTrait;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;

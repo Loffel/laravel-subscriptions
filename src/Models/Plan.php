@@ -207,7 +207,7 @@ class Plan extends Model implements Sortable
 
         static::deleted(function ($plan) {
             $plan->features()->delete();
-            $plan->planSubscriptions()->delete();
+            $plan->subscriptions()->delete();
         });
     }
 
@@ -308,5 +308,19 @@ class Plan extends Model implements Sortable
         $this->update(['is_active' => false]);
 
         return $this;
+    }
+
+    /**
+     * Get plan feature by the given slug.
+     *
+     * @param string $featureSlug
+     *
+     * @return \Loffel\Subscriptions\Models\PlanFeature|null
+     */
+    public function getFeature(string $featureSlug): ?PlanFeature
+    {
+        return $this->features()
+            ->where('slug', 'LIKE', $featureSlug . '%')
+            ->first();
     }
 }

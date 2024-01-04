@@ -299,7 +299,7 @@ class PlanSubscription extends Model
         // (e.g., invoice_interval and invoice_period) we will update
         // the billing dates starting today, and sice we are basically creating
         // a new billing cycle, the usage data will be cleared.
-        if ($this->plan->invoice_interval !== $plan->invoice_interval || $this->plan->invoice_period !== $plan->invoice_period) {
+        if ($this->plan->invoice_interval !== $plan->invoice_interval || $this->plan->invoice_period !== $plan->invoice_period || $this->plan->isFree()) {
             $this->setNewPeriod($plan->invoice_interval, $plan->invoice_period);
             $this->usage()->delete();
         }
@@ -307,6 +307,50 @@ class PlanSubscription extends Model
         // Attach new plan to subscription
         $this->plan_id = $plan->getKey();
         $this->save();
+
+        return $this;
+    }
+
+    /**
+     * Change subscription plan without clearing the usages
+     *
+     * @param \Loffel\Subscriptions\Models\Plan $plan
+     *
+     * @return $this
+     */
+    public function changePlanKeepUsage(Plan $plan)
+    {
+        if ($this->plan->invoice_interval !== $plan->invoice_interval || $this->plan->invoice_period !== $plan->invoice_period) {
+            $this->setNewPeriod($plan->invoice_interval, $plan->invoice_period);
+        }
+
+        $this->plan_id = $plan->getKey();
+        $this->save();
+
+        return $this;
+    }
+
+    /**
+     * Renew subscription period.
+     *
+     * @throws \LogicException
+     *
+     * @return $this
+     */
+    public function renewWithoutClearingUsage()
+    {
+        if ($this->ended() && $this->canceled()) {
+            throw new LogicException('Unable to renew canceled ended subscription.');
+        }
+
+        $subscription = $this;
+
+        DB::transaction(function () use ($subscription) {
+            // Renew period
+            $subscription->setNewPeriod();
+            $subscription->canceled_at = null;
+            $subscription->save();
+        });
 
         return $this;
     }
@@ -524,9 +568,13 @@ class PlanSubscription extends Model
             return true;
         }
 
+        if (is_null($usage) && $featureValue > 0 && $featureValue !== 'false' && !is_null($featureValue)) {
+            return true;
+        }
+
         // If the feature value is zero, let's return false since
         // there's no uses available. (useful to disable countable features)
-        if (! $usage || $usage->expired() || is_null($featureValue) || $featureValue === '0' || $featureValue === 'false') {
+        if (!$usage || $usage->expired() || is_null($featureValue) || $featureValue === '0' || $featureValue === 'false') {
             return false;
         }
 
@@ -572,5 +620,21 @@ class PlanSubscription extends Model
         $feature = $this->plan->features()->where('slug', $featureSlug)->first();
 
         return $feature->value ?? null;
+    }
+
+    /**
+     * Get feature.
+     *
+     * @param string $featureSlug
+     *
+     * @return mixed
+     */
+    public function getFeature(string $featureSlug)
+    {
+        $feature = $this->plan->features()
+            ->where('slug', 'LIKE', $featureSlug . '%')
+            ->first();
+
+        return $feature;
     }
 }

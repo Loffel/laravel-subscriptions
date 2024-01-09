@@ -24,9 +24,9 @@ class SubscriptionsServiceProvider extends ServiceProvider
      * @var array
      */
     protected $commands = [
-        'command.loffel.subscriptions.migrate' => MigrateCommand::class,
-        'command.loffel.subscriptions.publish' => PublishCommand::class,
-        'command.loffel.subscriptions.rollback' => RollbackCommand::class,
+        MigrateCommand::class,
+        PublishCommand::class,
+        RollbackCommand::class,
     ];
 
     /**
@@ -36,7 +36,9 @@ class SubscriptionsServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->mergeConfigFrom(realpath(__DIR__.'/../../config/config.php'), 'loffel.subscriptions');
+        $this->mergeConfigFrom(
+            realpath(__DIR__ . '/../../config/config.php'), 'loffel.subscriptions'
+        );
 
         // Bind eloquent models to IoC container
         $this->registerModels([
@@ -45,9 +47,6 @@ class SubscriptionsServiceProvider extends ServiceProvider
             'loffel.subscriptions.plan_subscription' => PlanSubscription::class,
             'loffel.subscriptions.plan_subscription_usage' => PlanSubscriptionUsage::class,
         ]);
-
-        // Register console commands
-        $this->commands($this->commands);
     }
 
     /**
@@ -57,9 +56,15 @@ class SubscriptionsServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Publish Resources
-        $this->publishesConfig('loffel/laravel-subscriptions');
-        $this->publishesMigrations('loffel/laravel-subscriptions');
-        ! $this->autoloadMigrations('loffel/laravel-subscriptions') || $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
+        $this->publishes([
+            realpath(__DIR__ . '/../../config/config.php') => config_path('laravel-subscriptions.php'),
+        ]);
+        $this->loadMigrationsFrom(__DIR__.'/../../database/migrations');
+
+        if ($this->app->runningInConsole()) {
+            $this->commands(
+                $this->commands
+            );
+        }
     }
 }
